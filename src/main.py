@@ -335,8 +335,7 @@ for epoch in range(n_epochs):
     val_acc, _, _ = evaluate(model, val_loader, device)
     scheduler.step(1 - val_acc)
 
-    if (epoch + 1) % 5 == 0 or val_acc > best_val_acc:
-        print(f"Epoch {epoch+1:3d}: train_loss={train_loss:.4f} train_acc={train_acc:.3f} val_acc={val_acc:.3f}")
+    print(f"Epoch {epoch+1:3d}/{n_epochs}: train_loss={train_loss:.4f} train_acc={train_acc:.3f} val_acc={val_acc:.3f}")
 
     if val_acc > best_val_acc:
         best_val_acc = val_acc
