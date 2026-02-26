@@ -199,7 +199,8 @@ def train_epoch(model, loader, criterion, optimizer, device):
     total_loss = 0
     correct = 0
     total = 0
-    for X, y in loader:
+    n_batches = len(loader)
+    for i, (X, y) in enumerate(loader):
         X, y = X.to(device), y.to(device)
         optimizer.zero_grad()
         out = model(X)
@@ -209,6 +210,8 @@ def train_epoch(model, loader, criterion, optimizer, device):
         total_loss += loss.item() * len(y)
         correct += (out.argmax(1) == y).sum().item()
         total += len(y)
+        if (i + 1) % 50 == 0 or (i + 1) == n_batches:
+            print(f"  batch {i+1}/{n_batches} — loss={loss.item():.4f}", flush=True)
     return total_loss / total, correct / total
 
 
