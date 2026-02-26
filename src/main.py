@@ -3,6 +3,7 @@ import numpy as np
 import os
 import pandas as pd
 import pickle
+from joblib import Parallel, delayed
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
@@ -124,12 +125,24 @@ VALID_KEYS = {
 }
 
 
+def _process_one(audio_path, label):
+    """Extract features for a single track. Returns (features, label) or None."""
+    try:
+        features = extract_features(audio_path)
+        return {'features': features, 'label': label}
+    except Exception as e:
+        print(f"  Skipping {os.path.basename(audio_path)}: {e}")
+        return None
+
+
 def load_dataset(audio_dir, annotation_dir, cache_path="../data/cache_v4.pkl"):
     if os.path.exists(cache_path):
         print("Loading from cache...")
         with open(cache_path, 'rb') as f:
             return pickle.load(f)
-    data = []
+
+    # Collect valid (audio_path, label) pairs
+    tasks = []
     for key_file in os.listdir(annotation_dir):
         if not key_file.endswith('.key'):
             continue
@@ -141,8 +154,13 @@ def load_dataset(audio_dir, annotation_dir, cache_path="../data/cache_v4.pkl"):
             label = clean_label(f.read().strip())
             if label not in VALID_KEYS:
                 continue
-        features = extract_features(audio_path)
-        data.append({'features': features, 'label': label})
+        tasks.append((audio_path, label))
+
+    print(f"Extracting features from {len(tasks)} tracks (parallel)...")
+    results = Parallel(n_jobs=-1, verbose=10)(
+        delayed(_process_one)(path, label) for path, label in tasks
+    )
+    data = [r for r in results if r is not None]
 
     df = pd.DataFrame(data)
     with open(cache_path, 'wb') as f:
