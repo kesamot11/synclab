@@ -1,0 +1,8 @@
+.venv/
+data/audio/
+data/md5/
+data/annotations/
+data/giantsteps-mtg-key-dataset/
+data/*.pkl
+__pycache__/
+*.pyc
