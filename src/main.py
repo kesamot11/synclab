@@ -308,8 +308,8 @@ print(f"Training chunks: {len(train_ds)} (from {len(final_train_mels)} tracks)")
 print(f"Validation chunks: {len(val_ds)} (from {len(val_mels)} tracks)")
 print(f"Test tracks: {len(test_mels)}")
 
-train_loader = DataLoader(train_ds, batch_size=128, shuffle=True, num_workers=2)
-val_loader = DataLoader(val_ds, batch_size=128, shuffle=False, num_workers=2)
+train_loader = DataLoader(train_ds, batch_size=128, shuffle=True, num_workers=0)
+val_loader = DataLoader(val_ds, batch_size=128, shuffle=False, num_workers=0)
 
 # --- Train CNN ---
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
