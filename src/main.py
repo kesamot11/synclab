@@ -210,7 +210,7 @@ def train_epoch(model, loader, criterion, optimizer, device):
         total_loss += loss.item() * len(y)
         correct += (out.argmax(1) == y).sum().item()
         total += len(y)
-        if (i + 1) % 50 == 0 or (i + 1) == n_batches:
+        if (i + 1) % 10 == 0 or (i + 1) == n_batches:
             print(f"  batch {i+1}/{n_batches} — loss={loss.item():.4f}", flush=True)
     return total_loss / total, correct / total
 
@@ -332,8 +332,9 @@ patience = 15
 patience_counter = 0
 n_epochs = 100
 
-print(f"\nTraining for up to {n_epochs} epochs...")
+print(f"\nTraining for up to {n_epochs} epochs...", flush=True)
 for epoch in range(n_epochs):
+    print(f"\n--- Starting epoch {epoch+1}/{n_epochs} ---", flush=True)
     train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device)
     val_acc, _, _ = evaluate(model, val_loader, device)
     scheduler.step(1 - val_acc)
