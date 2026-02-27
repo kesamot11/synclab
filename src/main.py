@@ -121,7 +121,7 @@ class KeyDataset(Dataset):
                 self.labels.append(label)
             else:
                 # Extract multiple overlapping chunks for more training data
-                stride = n_frames // 2 if augment else n_frames
+                stride = n_frames if augment else n_frames
                 for start in range(0, n_total - n_frames + 1, stride):
                     chunk = mel[:, start:start + n_frames]
                     self.samples.append(chunk)
@@ -308,8 +308,8 @@ print(f"Training chunks: {len(train_ds)} (from {len(final_train_mels)} tracks)")
 print(f"Validation chunks: {len(val_ds)} (from {len(val_mels)} tracks)")
 print(f"Test tracks: {len(test_mels)}")
 
-train_loader = DataLoader(train_ds, batch_size=32, shuffle=True, num_workers=0)
-val_loader = DataLoader(val_ds, batch_size=64, shuffle=False, num_workers=0)
+train_loader = DataLoader(train_ds, batch_size=128, shuffle=True, num_workers=2)
+val_loader = DataLoader(val_ds, batch_size=128, shuffle=False, num_workers=2)
 
 # --- Train CNN ---
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
